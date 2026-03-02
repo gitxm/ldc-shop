@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useI18n } from "@/lib/i18n/context"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label"
 import { toast } from "sonner"
 import { saveNotificationSettings, testBarkNotification, testEmailNotification, testNotification } from "@/actions/admin"
 import { Bell, CreditCard, RotateCcw, ExternalLink, Mail, Smartphone } from "lucide-react"
+import { useRouter } from "next/navigation"
 
 interface NotificationsContentProps {
     settings: {
@@ -29,6 +30,7 @@ interface NotificationsContentProps {
 
 export function NotificationsContent({ settings }: NotificationsContentProps) {
     const { t } = useI18n()
+    const router = useRouter()
     const [token, setToken] = useState(settings.telegramBotToken || '')
     const [chatId, setChatId] = useState(settings.telegramChatId || '')
     const [language, setLanguage] = useState(settings.telegramLanguage || 'zh')
@@ -51,13 +53,27 @@ export function NotificationsContent({ settings }: NotificationsContentProps) {
     const [isTestingEmail, setIsTestingEmail] = useState(false)
     const [testEmail, setTestEmail] = useState('')
 
-
+    useEffect(() => {
+        setToken(settings.telegramBotToken || '')
+        setChatId(settings.telegramChatId || '')
+        setLanguage(settings.telegramLanguage || 'zh')
+        setTelegramEnabled(settings.telegramEnabled || false)
+        setBarkEnabled(settings.barkEnabled || false)
+        setBarkServerUrl(settings.barkServerUrl || 'https://api.day.app')
+        setBarkDeviceKey(settings.barkDeviceKey || '')
+        setResendEnabled(settings.resendEnabled || false)
+        setResendApiKey(settings.resendApiKey || '')
+        setResendFromEmail(settings.resendFromEmail || '')
+        setResendFromName(settings.resendFromName || '')
+        setEmailLanguage(settings.emailLanguage || 'zh')
+    }, [settings])
 
     async function handleSave(formData: FormData) {
         setIsLoading(true)
         try {
             await saveNotificationSettings(formData)
             toast.success(t('common.success'))
+            router.refresh()
         } catch (e: any) {
             toast.error(e.message || t('common.error'))
         } finally {
