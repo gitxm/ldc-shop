@@ -123,6 +123,8 @@
 |--------|------|------|
 | `OAUTH_CLIENT_ID` | Secret | Linux DO Connect Client ID |
 | `OAUTH_CLIENT_SECRET` | Secret | Linux DO Connect Client Secret |
+| `GITHUB_ID` | Secret | GitHub OAuth App Client ID（可选，配置后启用 GitHub 登录） |
+| `GITHUB_SECRET` | Secret | GitHub OAuth App Client Secret（可选，配置后启用 GitHub 登录） |
 | `MERCHANT_ID` | Secret | EPay 商户 ID |
 | `MERCHANT_KEY` | Secret | EPay 商户 Key |
 | `AUTH_SECRET` | Secret | 随机字符串 (可用 `openssl rand -base64 32` 生成) |
@@ -138,6 +140,7 @@
 | 平台 | 配置项 | 地址 |
 |------|--------|------|
 | Linux DO Connect | 回调地址 (Callback URL) | `https://ldc-shop.xxx.workers.dev/api/auth/callback/linuxdo` |
+| GitHub OAuth App | 回调地址 (Authorization callback URL) | `https://ldc-shop.xxx.workers.dev/api/auth/callback/github` |
 | EPay / Linux DO Credit | 通知 URL (Notify URL) | `https://ldc-shop.xxx.workers.dev/api/notify` |
 | EPay / Linux DO Credit | 回调 URL (Return URL) | `https://ldc-shop.xxx.workers.dev/callback` |
 
@@ -186,11 +189,15 @@
 |---|---|
 | `OAUTH_CLIENT_ID` | Linux DO Connect Client ID（建议 Secret） |
 | `OAUTH_CLIENT_SECRET` | Linux DO Connect Client Secret（Secret） |
+| `GITHUB_ID` | GitHub OAuth App Client ID（可选，配置后启用 GitHub 登录） |
+| `GITHUB_SECRET` | GitHub OAuth App Client Secret（可选，配置后启用 GitHub 登录） |
 | `MERCHANT_ID` | EPay 商户 ID（建议 Secret） |
 | `MERCHANT_KEY` | EPay 商户 Key（Secret） |
 | `AUTH_SECRET` | NextAuth 加密密钥（Secret） |
 | `ADMIN_USERS` | 管理员的 Linux DO 用户名 (name)，逗号分隔。例如: `zhangsan,lisi` |
 | `NEXT_PUBLIC_APP_URL` | 部署后的完整 URL (用于回调，必须 Text) |
+
+> 若使用 GitHub 账号作为管理员，`ADMIN_USERS` 中请填写 `gh_<github_login>`（例如 `gh_octocat`）。
 
 ## 🔌 卡密自动补货 API 对接
 
