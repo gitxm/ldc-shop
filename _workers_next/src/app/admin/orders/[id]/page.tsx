@@ -3,6 +3,7 @@ import { db } from "@/lib/db"
 import { orders } from "@/lib/db/schema"
 import { eq } from "drizzle-orm"
 import { AdminOrderDetailContent } from "@/components/admin/order-detail-content"
+import { getProductVariantLabels } from "@/lib/db/queries"
 import { unstable_noStore } from "next/cache"
 
 export default async function AdminOrderDetailPage({ params }: { params: Promise<{ id: string }> }) {
@@ -10,6 +11,9 @@ export default async function AdminOrderDetailPage({ params }: { params: Promise
   const { id } = await params
   const order = await db.query.orders.findFirst({ where: eq(orders.orderId, id) })
   if (!order) return notFound()
+
+  const labels = order.productId ? await getProductVariantLabels([order.productId]) : {}
+  const productVariantLabel = order.productId ? labels[order.productId] ?? null : null
 
   return (
     <AdminOrderDetailContent
@@ -20,6 +24,7 @@ export default async function AdminOrderDetailPage({ params }: { params: Promise
         email: order.email,
         productId: order.productId,
         productName: order.productName,
+        productVariantLabel,
         amount: order.amount,
         status: order.status,
         tradeNo: order.tradeNo,

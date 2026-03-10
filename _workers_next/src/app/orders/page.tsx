@@ -4,7 +4,7 @@ import { orders, reviews } from "@/lib/db/schema"
 import { eq, desc, inArray } from "drizzle-orm"
 import { redirect } from "next/navigation"
 import { OrdersContent } from "@/components/orders-content"
-import { normalizeTimestampMs } from "@/lib/db/queries"
+import { normalizeTimestampMs, getProductVariantLabels } from "@/lib/db/queries"
 import { unstable_noStore } from "next/cache"
 
 export default async function OrdersPage() {
@@ -34,6 +34,9 @@ export default async function OrdersPage() {
         }
     }
 
+    const productIds = Array.from(new Set(userOrders.map((o: any) => o.productId).filter(Boolean)))
+    const productVariantLabels = productIds.length > 0 ? await getProductVariantLabels(productIds) : {}
+
     return (
         <OrdersContent
             orders={userOrders.map((o: any) => ({
@@ -45,6 +48,7 @@ export default async function OrdersPage() {
                 createdAt: o.createdAt,
                 canReview: o.status === 'delivered' && !reviewedOrderIds.includes(o.orderId)
             }))}
+            productVariantLabels={productVariantLabels}
         />
     )
 }

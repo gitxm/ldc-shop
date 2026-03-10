@@ -22,6 +22,7 @@ interface Order {
     orderId: string
     productId?: string | null
     productName: string
+    productVariantLabel?: string | null
     amount: string
     status: string
     cardKey: string | null
@@ -160,7 +161,12 @@ export function OrderContent({ order, canViewKey, isOwner, refundRequest }: Orde
                                 <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
                                     {isPayment ? t('payment.itemLabel') : t('order.product')}
                                 </p>
-                                <p className="font-semibold">{isPayment ? t('payment.title') : order.productName}</p>
+                                <p className="font-semibold">
+                                    {isPayment ? t('payment.title') : order.productName}
+                                    {!isPayment && order.productVariantLabel && (
+                                        <span className="font-normal text-muted-foreground"> · {order.productVariantLabel}</span>
+                                    )}
+                                </p>
                             </div>
                             <div className="h-12 w-12 bg-gradient-to-br from-primary/20 to-primary/5 rounded-xl flex items-center justify-center border border-primary/20">
                                 {isPayment ? (

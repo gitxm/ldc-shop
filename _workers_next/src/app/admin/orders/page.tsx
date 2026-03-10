@@ -2,7 +2,7 @@ import { db } from "@/lib/db"
 import { loginUsers, orders } from "@/lib/db/schema"
 import { and, desc, eq, inArray, or, sql } from "drizzle-orm"
 import { AdminOrdersContent } from "@/components/admin/orders-content"
-import { normalizeTimestampMs, withOrderColumnFallback } from "@/lib/db/queries"
+import { normalizeTimestampMs, withOrderColumnFallback, getProductVariantLabels } from "@/lib/db/queries"
 import { PAYMENT_PRODUCT_ID } from "@/lib/payment"
 import { unstable_noStore } from "next/cache"
 
@@ -99,10 +99,14 @@ export default async function AdminOrdersPage(props: {
 
     const total = countRes[0]?.count || 0
 
+    const productIds = Array.from(new Set(rows.map((o: any) => o.productId).filter(Boolean)))
+    const productVariantLabels = productIds.length > 0 ? await getProductVariantLabels(productIds) : {}
+
     return (
         <AdminOrdersContent
             orders={rows.map((o: any) => ({
                 orderId: o.orderId,
+                productId: o.productId,
                 userId: o.userId,
                 username: (o.userId && usernameByUserId.get(o.userId)) || o.username,
                 email: o.email,
@@ -113,6 +117,7 @@ export default async function AdminOrdersPage(props: {
                 tradeNo: o.tradeNo,
                 createdAt: o.createdAt
             }))}
+            productVariantLabels={productVariantLabels}
             total={total}
             page={page}
             pageSize={pageSize}

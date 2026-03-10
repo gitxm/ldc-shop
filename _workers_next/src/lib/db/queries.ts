@@ -1079,6 +1079,21 @@ export async function getProductVariants(
             .orderBy(asc(products.sortOrder), desc(products.createdAt));
     });
 }
+
+export async function getProductVariantLabels(productIds: string[]): Promise<Record<string, string | null>> {
+    const ids = Array.from(new Set((productIds || []).map((id) => String(id).trim()).filter(Boolean)));
+    if (!ids.length) return {};
+    const rows = await db.select({ id: products.id, variantLabel: products.variantLabel })
+        .from(products)
+        .where(inArray(products.id, ids));
+    const out: Record<string, string | null> = {};
+    for (const row of rows) {
+        const label = row.variantLabel?.trim() || null;
+        if (label) out[row.id] = label;
+    }
+    return out;
+}
+
 export async function getProductForAdmin(id: string) {
     return await withProductColumnFallback(async () => {
         const result = await db.select({

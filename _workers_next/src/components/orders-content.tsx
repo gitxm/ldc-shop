@@ -21,7 +21,7 @@ interface Order {
     canReview?: boolean
 }
 
-export function OrdersContent({ orders }: { orders: Order[] }) {
+export function OrdersContent({ orders, productVariantLabels = {} }: { orders: Order[]; productVariantLabels?: Record<string, string | null> }) {
     const { t } = useI18n()
     const [query, setQuery] = useState("")
     const [status, setStatus] = useState<string>("all")
@@ -50,7 +50,9 @@ export function OrdersContent({ orders }: { orders: Order[] }) {
     ]
 
     const getOrderName = (order: Order) => {
-        return isPaymentOrder(order.productId) ? t('payment.title') : order.productName
+        const base = isPaymentOrder(order.productId) ? t('payment.title') : order.productName
+        const variant = order.productId ? productVariantLabels[order.productId] : null
+        return variant ? `${base} · ${variant}` : base
     }
 
     const filtered = useMemo(() => {
@@ -64,7 +66,7 @@ export function OrdersContent({ orders }: { orders: Order[] }) {
             const hay = [o.orderId, o.productName, displayName].join(' ').toLowerCase()
             return hay.includes(q)
         })
-    }, [orders, query, status, t])
+    }, [orders, query, status, productVariantLabels, t])
 
     return (
         <main className="container py-12">

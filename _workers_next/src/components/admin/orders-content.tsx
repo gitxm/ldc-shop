@@ -18,6 +18,7 @@ import { getDisplayUsername, getExternalProfileUrl } from "@/lib/user-profile-li
 
 interface Order {
     orderId: string
+    productId?: string | null
     userId: string | null
     username: string | null
     email: string | null
@@ -59,6 +60,7 @@ export function AdminOrdersContent({
     pageSize,
     query,
     status,
+    productVariantLabels = {},
 }: {
     orders: Order[]
     total: number
@@ -66,6 +68,7 @@ export function AdminOrdersContent({
     pageSize: number
     query: string
     status: string
+    productVariantLabels?: Record<string, string | null>
 }) {
     const { t } = useI18n()
     const router = useRouter()
@@ -313,7 +316,12 @@ export function AdminOrdersContent({
                                         <span className="font-medium text-sm text-muted-foreground">Guest</span>
                                     )}
                                 </TableCell>
-                                <TableCell>{order.productName}</TableCell>
+                                <TableCell>
+                                    <span>{order.productName}</span>
+                                    {order.productId && productVariantLabels[order.productId] && (
+                                        <span className="ml-1.5 text-muted-foreground">· {productVariantLabels[order.productId]}</span>
+                                    )}
+                                </TableCell>
                                 <TableCell>{Number(order.amount)}</TableCell>
                                 <TableCell>
                                     <Badge variant={getStatusBadgeVariant(order.status)} className="uppercase text-xs">

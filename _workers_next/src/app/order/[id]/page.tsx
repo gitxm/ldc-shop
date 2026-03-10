@@ -5,6 +5,7 @@ import { and, desc, eq } from "drizzle-orm"
 import { notFound } from "next/navigation"
 import { cookies } from "next/headers"
 import { OrderContent } from "@/components/order-content"
+import { getProductVariantLabels } from "@/lib/db/queries"
 
 export default async function OrderPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params
@@ -40,12 +41,16 @@ export default async function OrderPage({ params }: { params: Promise<{ id: stri
         }
     }
 
+    const labels = order.productId ? await getProductVariantLabels([order.productId]) : {}
+    const productVariantLabel = order.productId ? labels[order.productId] ?? null : null
+
     return (
         <OrderContent
             order={{
                 orderId: order.orderId,
                 productId: order.productId,
                 productName: order.productName,
+                productVariantLabel,
                 amount: order.amount,
                 status: order.status || 'pending',
                 cardKey: order.cardKey,
